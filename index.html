@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0d1117">
+  <meta name="description" content="Cyberpunk Fake Random Code Terminal - Authentic retro hacker terminal with sound effects, auto-hack, Matrix rain, and breach alerts.">
+  <title>CYBERDECK // NEURAL CODE TERMINAL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-green crt-active">
+
+  <!-- Scanline & Vignette Retro CRT Overlay -->
+  <div class="crt-overlay" id="crtOverlay"></div>
+
+  <!-- Background Matrix Rain Canvas -->
+  <canvas id="matrixCanvas"></canvas>
+
+  <!-- Main Container / Cyberdeck Shell -->
+  <div class="cyber-window">
+    
+    <!-- Top Cyber Toolbar -->
+    <header class="cyber-header">
+      <div class="header-left">
+        <div class="window-controls">
+          <span class="win-btn win-close" title="Emergency Terminate" id="btnWinClose"></span>
+          <span class="win-btn win-min" title="Minimize Panels" id="btnWinMin"></span>
+          <span class="win-btn win-max" title="Toggle Fullscreen" id="btnWinMax"></span>
+        </div>
+        <div class="terminal-title">
+          <span class="pulse-dot"></span>
+          <span class="title-text">root@CYBERDECK-X99 [pts/0] — PROTOCOL: ZERO-TRACE</span>
+        </div>
+      </div>
+
+      <div class="header-telemetry">
+        <div class="telemetry-item">
+          <span class="tele-label">TARGET:</span>
+          <span class="tele-val" id="targetIp">198.51.100.24</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="tele-label">CPU:</span>
+          <span class="tele-val" id="cpuLoad">47%</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="tele-label">SYS_RAM:</span>
+          <span class="tele-val" id="ramLoad">63.8%</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="tele-label">ENCRYPTION:</span>
+          <span class="tele-val text-secure">QUANTUM-256</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Module Selector -->
+        <select id="moduleSelect" class="cyber-select" title="Switch Code Archetype">
+          <option value="kernel">Kernel Exploit (C/ASM)</option>
+          <option value="quantum">Quantum Lattice (Python)</option>
+          <option value="satellite">Orbital Uplink (C++)</option>
+          <option value="smartContract">Flash-Loan Drainer (Solidity)</option>
+          <option value="cyberWeapons">Metasploit Auto-Zero (Python)</option>
+        </select>
+
+        <!-- Theme Selector -->
+        <select id="themeSelect" class="cyber-select" title="Color Theme">
+          <option value="theme-green">Matrix Green</option>
+          <option value="theme-cyberpunk">Cyberpunk Neon</option>
+          <option value="theme-amber">Amber CRT (Retro)</option>
+          <option value="theme-blood">Blackhat Crimson</option>
+          <option value="theme-ice">Ghost Ice Blue</option>
+        </select>
+
+        <!-- Sound Toggle -->
+        <button id="btnSound" class="cyber-btn" title="Toggle Mechanical Audio (S)">
+          <span id="soundIcon">🔊</span> SOUND
+        </button>
+
+        <!-- CRT Toggle -->
+        <button id="btnCrt" class="cyber-btn active" title="Toggle CRT Screen FX">
+          📺 CRT
+        </button>
+
+        <!-- Matrix Rain Toggle -->
+        <button id="btnMatrix" class="cyber-btn" title="Toggle Digital Rain (M)">
+          🌧️ RAIN
+        </button>
+
+        <!-- Auto Hack Toggle -->
+        <button id="btnAutoHack" class="cyber-btn btn-highlight" title="Auto Hack Mode (A)">
+          ▶ AUTO HACK
+        </button>
+
+        <!-- Help Modal Button -->
+        <button id="btnHelp" class="cyber-btn" title="Keybindings & Cheat Sheet (H)">
+          ❓ HELP
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace Layout -->
+    <main class="cyber-main">
+      
+      <!-- Primary Code Terminal -->
+      <section class="terminal-area" id="terminalArea" tabindex="0">
+        <div class="terminal-banner">
+          <pre class="ascii-banner">
+  _____ _   _ ____  _____ ____  ____  _____ ____ _  __
+ / ____| \ | |  _ \|  ___|  _ \|  _ \| ____/ ___| |/ /
+| |    |  \| | |_) | |_  | | | | |_) |  _|| |   | ' / 
+| |___ | |\  |  _ <|  _| | |_| |  __/| |__| |___| . \ 
+ \_____|_| \_|_| \_\_|   |____/|_|   |_____\____|_|\_\
+  -- NEURAL CYBER-INTRUSION SHELL v3.4.1 [READY] --
+  Type any keys on your keyboard to inject code streams.
+  Press [H] or click [HELP] for Hollywood hacker hotkeys!
+          </pre>
+        </div>
+
+        <div id="codeDisplay" class="code-content"></div>
+        <div class="prompt-line">
+          <span class="prompt-user">root@cyberdeck</span>:<span class="prompt-path">~/infiltrate</span><span class="prompt-symbol">#</span>
+          <span class="cursor">█</span>
+        </div>
+      </section>
+
+      <!-- Side HUD Radar & Hex Inspector -->
+      <aside class="cyber-sidebar" id="cyberSidebar">
+        <!-- Radar Widget -->
+        <div class="sidebar-widget">
+          <div class="widget-header">
+            <span class="widget-title">SATELLITE RADAR UPLINK</span>
+            <span class="widget-status blink">SCANNING</span>
+          </div>
+          <div class="widget-body radar-wrapper">
+            <canvas id="radarCanvas" width="220" height="220"></canvas>
+            <div class="radar-crosshair"></div>
+          </div>
+          <div class="radar-coords">LAT: 37.7749° N | LON: 122.4194° W</div>
+        </div>
+
+        <!-- Live Hex Dump Widget -->
+        <div class="sidebar-widget">
+          <div class="widget-header">
+            <span class="widget-title">RAW MEMORY DUMP</span>
+            <span class="widget-sub">0x7FFF0000</span>
+          </div>
+          <div class="widget-body hex-dump" id="hexDump">
+            <!-- Dynamically populated hex streams -->
+          </div>
+        </div>
+
+        <!-- Cryptographic Cipher Decryptor Widget -->
+        <div class="sidebar-widget">
+          <div class="widget-header">
+            <span class="widget-title">HASH DECRYPTOR</span>
+            <span class="widget-sub">MD5/SHA256</span>
+          </div>
+          <div class="widget-body cipher-stream" id="cipherStream">
+            <div class="cipher-row">HASH: <span class="hash-text">e3b0c44298fc1c149afbf4c8</span></div>
+            <div class="cipher-row">SALT: <span class="salt-text">0x9F41C0A37B8E</span></div>
+            <div class="cipher-row status-cracking">[>] CRACKING ROUND: <span id="crackRound">18,492</span>/s</div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Bottom Quick Control Bar (Specially helpful on Mobile & Fast Access) -->
+    <footer class="cyber-footer">
+      <div class="footer-shortcuts">
+        <button class="quick-badge" id="qbGranted" title="Trigger Access Granted (Alt x3)">
+          <span class="badge-key">ALT x3</span> ACCESS GRANTED
+        </button>
+        <button class="quick-badge" id="qbDenied" title="Trigger Access Denied (Caps)">
+          <span class="badge-key">CAPS</span> ACCESS DENIED
+        </button>
+        <button class="quick-badge" id="qbBreach" title="Initiate Data Payload Download (B)">
+          <span class="badge-key">B</span> DATA BREACH
+        </button>
+        <button class="quick-badge" id="qbClear" title="Clear Terminal (Esc)">
+          <span class="badge-key">ESC</span> CLEAR SCREEN
+        </button>
+      </div>
+      <div class="footer-stats">
+        <span>PACKETS: <strong id="statPackets">14,289</strong></span>
+        <span>SPEED: <strong id="statSpeed">4.8 GB/s</strong></span>
+        <span>STATUS: <strong class="text-green">ONLINE</strong></span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Mobile Hack Button (Tappable Floating Area) -->
+  <div class="mobile-tap-pad" id="mobileTapPad">
+    <span>⚡ TAP ANYWHERE TO HACK ⚡</span>
+  </div>
+
+  <!-- MODAL: ACCESS GRANTED -->
+  <div class="modal-overlay" id="modalGranted">
+    <div class="modal-box modal-success">
+      <div class="modal-corner top-left"></div>
+      <div class="modal-corner top-right"></div>
+      <div class="modal-corner bottom-left"></div>
+      <div class="modal-corner bottom-right"></div>
+      <div class="modal-icon">✔</div>
+      <h1 class="modal-title">ACCESS GRANTED</h1>
+      <p class="modal-desc">ROOT LEVEL SECURITY CLEARANCE AUTHORIZED</p>
+      <div class="clearance-badge">LEVEL 5 TOP SECRET // NORAD-DEFCON-1</div>
+      <button class="cyber-btn modal-dismiss" id="closeGranted">DISMISS [ESC]</button>
+    </div>
+  </div>
+
+  <!-- MODAL: ACCESS DENIED / INTRUSION ALERT -->
+  <div class="modal-overlay" id="modalDenied">
+    <div class="modal-box modal-danger">
+      <div class="modal-corner top-left"></div>
+      <div class="modal-corner top-right"></div>
+      <div class="modal-corner bottom-left"></div>
+      <div class="modal-corner bottom-right"></div>
+      <div class="modal-icon alert-flashing">⚠</div>
+      <h1 class="modal-title">ACCESS DENIED</h1>
+      <p class="modal-desc">SECURITY PROTOCOL VIOLATION DETECTED</p>
+      <div class="threat-badge">IP LOGGED & TRACE-ROUTING INITIATED</div>
+      <button class="cyber-btn modal-dismiss" id="closeDenied">BYPASS LOCKOUT [ESC]</button>
+    </div>
+  </div>
+
+  <!-- MODAL: DATA BREACH / PAYLOAD EXTRACTION -->
+  <div class="modal-overlay" id="modalBreach">
+    <div class="modal-box modal-breach">
+      <div class="modal-corner top-left"></div>
+      <div class="modal-corner top-right"></div>
+      <div class="modal-corner bottom-left"></div>
+      <div class="modal-corner bottom-right"></div>
+      <h1 class="modal-title">EXFILTRATING DATABASE</h1>
+      <p class="modal-desc">DRAINING ENCRYPTED VAULT PAYLOAD</p>
+      
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="breachProgress"></div>
+      </div>
+      
+      <div class="breach-telemetry">
+        <span>PROGRESS: <strong id="breachPercent">0%</strong></span>
+        <span>DOWNLOADED: <strong id="breachSize">0 MB</strong> / 4.2 GB</span>
+        <span>RATE: <strong id="breachRate">620 MB/s</strong></span>
+      </div>
+
+      <button class="cyber-btn modal-dismiss" id="abortBreach">ABORT EXFILTRATION</button>
+    </div>
+  </div>
+
+  <!-- MODAL: HELP / CHEAT SHEET -->
+  <div class="modal-overlay" id="modalHelp">
+    <div class="modal-box modal-info">
+      <div class="modal-corner top-left"></div>
+      <div class="modal-corner top-right"></div>
+      <div class="modal-corner bottom-left"></div>
+      <div class="modal-corner bottom-right"></div>
+      <h1 class="modal-title">OPERATOR HOTKEYS & CHEATSHEET</h1>
+      
+      <div class="shortcuts-grid">
+        <div class="shortcut-item">
+          <kbd>ANY KEY</kbd>
+          <span>Stream realistic code typing</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>ALT (x3)</kbd>
+          <span>Trigger ACCESS GRANTED popup</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>CAPS LOCK</kbd>
+          <span>Trigger ACCESS DENIED alarm</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>B</kbd>
+          <span>Initiate Data Breach payload download</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>A</kbd>
+          <span>Toggle Auto-Hack Handsfree Mode</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>M</kbd>
+          <span>Toggle Matrix Digital Rain</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>S</kbd>
+          <span>Toggle Mechanical Keyboard Sound FX</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>ESC</kbd>
+          <span>Clear Terminal / Close Modals</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>F11</kbd>
+          <span>Toggle Fullscreen Immersion</span>
+        </div>
+      </div>
+
+      <button class="cyber-btn modal-dismiss" id="closeHelp">CLOSE [ESC]</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="audio.js"></script>
+  <script src="codeSnippets.js"></script>
+  <script src="terminal.js"></script>
+</body>
+</html>
